@@ -7,7 +7,6 @@
 <style>
 *{box-sizing:border-box;margin:0;padding:0;font-family:"Poppins",sans-serif;}
 body{background:#2f2f2f;color:#fff;height:100vh;overflow:hidden;}
-header{position:fixed;top:0;width:100%;padding:15px 30px;background:#1f1f1f;font-size:24px;font-weight:700;z-index:10;box-shadow:0 2px 10px rgba(0,0,0,0.5);}
 .auth-container{display:flex;align-items:center;justify-content:center;height:100vh;transition:opacity 0.5s;}
 .container{background:rgba(255,255,255,0.05);border-radius:20px;padding:40px;width:360px;text-align:center;backdrop-filter:blur(10px);box-shadow:0 0 30px rgba(0,0,0,0.5);}
 input{width:90%;padding:12px;margin:10px 0;border:none;border-radius:10px;background:rgba(255,255,255,0.1);color:#fff;}
@@ -38,7 +37,6 @@ button:hover{background:#dcdcdc;}
 </style>
 </head>
 <body>
-<header>Connecto</header>
 
 <!-- Авторизация -->
 <div id="authContainer" class="auth-container">
@@ -99,12 +97,13 @@ button:hover{background:#dcdcdc;}
 </div>
 
 <script type="module">
+// Инициализация Firebase
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
 import { getFirestore, setDoc, doc, getDoc, updateDoc, collection, query, where, getDocs, arrayUnion, arrayRemove, orderBy, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-storage.js";
 
-// --- Firebase config ---
+// Firebase config
 const firebaseConfig = {
   apiKey: "AIzaSyDW9wSQ8xVTvrgaDzwYrg1v8Jzm5KqrrAU",
   authDomain: "baseuser-82b5d.firebaseapp.com",
@@ -118,6 +117,7 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 const storage = getStorage(app);
 
+// Элементы
 const buttons=document.getElementById("buttons");
 const registerForm=document.getElementById("registerForm");
 const loginForm=document.getElementById("loginForm");
@@ -129,10 +129,10 @@ let currentUserId=null;
 let currentUserData=null;
 let currentChatId=null;
 
-// --- UI handlers ---
-document.getElementById("btnRegister").onclick=()=>{ buttons.classList.add("hidden"); registerForm.classList.remove("hidden"); };
-document.getElementById("btnLogin").onclick=()=>{ buttons.classList.add("hidden"); loginForm.classList.remove("hidden"); };
-window.goBack=()=>{ registerForm.classList.add("hidden"); loginForm.classList.add("hidden"); buttons.classList.remove("hidden"); };
+// --- UI ---
+document.getElementById("btnRegister").onclick=()=>{buttons.classList.add("hidden");registerForm.classList.remove("hidden");};
+document.getElementById("btnLogin").onclick=()=>{buttons.classList.add("hidden");loginForm.classList.remove("hidden");};
+window.goBack=()=>{registerForm.classList.add("hidden");loginForm.classList.add("hidden");buttons.classList.remove("hidden");};
 
 // --- Регистрация ---
 document.getElementById("createAccountBtn").onclick=async()=>{
@@ -185,7 +185,7 @@ onAuthStateChanged(auth,async user=>{
   }
 });
 
-// --- Основная страница ---
+// --- Главная ---
 function loadMainPage(){
   document.getElementById("authContainer").classList.add("hidden");
   mainPage.classList.remove("hidden");
@@ -203,16 +203,16 @@ window.showTab=(tab,event)=>{
   if(event) event.target.classList.add("active");
   const content=document.getElementById("tabContent");
   content.innerHTML="";
-  if(tab=="news"){ content.innerHTML="<h2>Новости</h2><p>Последние события!</p>"; }
-  else if(tab=="addFriend"){ renderAddFriend(); }
-  else if(tab=="friends"){ renderFriends(); }
-  else if(tab=="notifications"){ renderNotifications(); }
-  else if(tab=="messages"){ renderChats(); }
+  if(tab=="news"){content.innerHTML="<h2>Новости</h2><p>Последние события!</p>";}
+  else if(tab=="addFriend"){renderAddFriend();}
+  else if(tab=="friends"){renderFriends();}
+  else if(tab=="notifications"){renderNotifications();}
+  else if(tab=="messages"){renderChats();}
 };
 
 // --- Настройки ---
-window.openSettings=()=>{ settingsPage.classList.remove("hidden"); mainPage.classList.add("hidden"); };
-window.closeSettings=()=>{ settingsPage.classList.add("hidden"); mainPage.classList.remove("hidden"); };
+window.openSettings=()=>{settingsPage.classList.remove("hidden");mainPage.classList.add("hidden");};
+window.closeSettings=()=>{settingsPage.classList.add("hidden");mainPage.classList.remove("hidden");};
 window.saveSettings=async()=>{
   const newName=document.getElementById("newName").value.trim();
   const newPhoto=document.getElementById("newPhoto").files[0];
@@ -282,7 +282,7 @@ async function renderFriends(){
       await updateDoc(doc(db,"users",fid),{friends:arrayRemove(currentUserId)});
       renderFriends();
     };
-    div.appendChild(msgBtn); div.appendChild(delBtn);
+    div.appendChild(msgBtn);div.appendChild(delBtn);
     friendsList.appendChild(div);
   }
 }
@@ -303,7 +303,7 @@ async function renderNotifications(){
     accept.onclick=async()=>{
       await updateDoc(doc(db,"users",currentUserId),{friends:arrayUnion(reqId),friendRequests:arrayRemove(reqId)});
       await updateDoc(doc(db,"users",reqId),{friends:arrayUnion(currentUserId)});
-      renderNotifications(); renderFriends();
+      renderNotifications();renderFriends();
     };
     const reject=document.createElement("button");
     reject.textContent="Отклонить";
@@ -311,7 +311,7 @@ async function renderNotifications(){
       await updateDoc(doc(db,"users",currentUserId),{friendRequests:arrayRemove(reqId)});
       renderNotifications();
     };
-    div.appendChild(accept); div.appendChild(reject);
+    div.appendChild(accept);div.appendChild(reject);
     notifList.appendChild(div);
   }
 }
