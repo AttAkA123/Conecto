@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Connecto — Профиль</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+body {margin:0;font-family:'Poppins',sans-serif;background:linear-gradient(135deg,#3a3a3a,#2a2a2a);color:#fff;}
+.container {display:flex;height:100vh;}
+.sidebar {width:220px;background: rgba(255,255,255,0.05);backdrop-filter: blur(10px);padding:20px;display:flex;flex-direction:column;gap:15px;}
+.menu-item {padding:12px;border-radius:10px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;transition:0.3s;}
+.menu-item:hover {background: rgba(255,255,255,0.2);}
+.notif-count {background:#ff4d4d;border-radius:50%;padding:2px 6px;font-size:12px;}
+.main {flex:1;background: rgba(255,255,255,0.05);backdrop-filter: blur(10px);margin:20px;border-radius:20px;padding:30px;position:relative;overflow-y:auto;}
+.hidden {display:none;}
+input, button {padding:8px;margin:5px;border-radius:10px;border:none;outline:none;}
+input {width:100%;background:rgba(255,255,255,0.1);color:#fff;}
+input::placeholder {color:rgba(255,255,255,0.7);}
+button {cursor:pointer;transition:0.3s;}
+button:hover {opacity:0.8;}
+.card {background: rgba(255,255,255,0.1);backdrop-filter: blur(5px);border-radius:15px;padding:10px;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;transition:0.3s;}
+.card:hover {background: rgba(255,255,255,0.2);}
+.card .info {display:flex;align-items:center;gap:10px;}
+.card .info img {width:40px;height:40px;border-radius:50%;border:1px solid #fff;}
+.card .status-dot {width:10px;height:10px;border-radius:50%;display:inline-block;margin-left:5px;}
+.card .actions button {margin-left:5px;padding:5px 10px;border-radius:8px;border:none;}
+.chat-box {position:absolute;bottom:20px;right:20px;width:320px;height:400px;background: rgba(0,0,0,0.6);border-radius:15px;padding:10px;display:flex;flex-direction:column;transition:0.3s;}
+.messages {flex:1;overflow-y:auto;margin-bottom:10px;}
+.messages div {margin:5px 0;padding:5px 10px;border-radius:10px;}
+.messages .self {background: rgba(255,255,255,0.8);color:#000;align-self:flex-end;}
+.messages .friend {background: rgba(255,255,255,0.2);align-self:flex-start;}
+#chatInput {width:calc(100% - 90px);display:inline-block;background:rgba(255,255,255,0.1);}
+#sendMessageBtn {width:70px;display:inline-block;background:rgba(255,255,255,0.3);}
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="sidebar">
+    <div class="menu-item" id="profileTab">👤 Профиль</div>
+    <div class="menu-item" id="addFriendTab">➕ Добавить друга</div>
+    <div class="menu-item" id="friendsTab">👥 Друзья</div>
+    <div class="menu-item" id="messagesTab">💬 Сообщения</div>
+    <div class="menu-item" id="notificationsTab">🔔 Уведомления <span id="notifCount" class="notif-count">0</span></div>
+    <button id="logoutBtn">Выйти</button>
+  </div>
+
+  <div class="main">
+    <!-- Профиль -->
+    <div id="profilePanel">
+      <img id="profileAvatar" src="https://via.placeholder.com/100" style="width:100px;height:100px;border-radius:50%;">
+      <h2 id="profileName">Имя</h2>
+      <p>ID: <span id="profileID">000000</span></p>
+      <p>Статус: <span id="profileStatus">Не онлайн</span></p>
+      <button id="settingsBtn">Настройки</button>
+    </div>
+
+    <!-- Настройки профиля -->
+    <div id="settingsPanel" class="hidden">
+      <h3>Настройки профиля</h3>
+      <input type="text" id="newName" placeholder="Новое имя">
+      <input type="text" id="newAvatar" placeholder="Ссылка на аватар">
+      <input type="text" id="newStatus" placeholder="Статус (например: Онлайн)">
+      <button id="saveSettings">Сохранить</button>
+    </div>
+
+    <!-- Добавить друга -->
+    <div id="addFriendPanel" class="hidden">
+      <h3>Добавить друга</h3>
+      <input type="number" id="friendID" placeholder="Введите уникальный ID">
+      <button id="searchFriend">Поиск</button>
+      <div id="friendResult"></div>
+    </div>
+
+    <!-- Друзья -->
+    <div id="friendsPanel" class="hidden"></div>
+
+    <!-- Сообщения -->
+    <div id="messagesPanel" class="hidden"></div>
+
+    <!-- Уведомления -->
+    <div id="notificationsPanel" class="hidden"></div>
+
+    <!-- Чат -->
+    <div class="chat-box hidden" id="chatBox">
+      <h4 id="chatWithName"></h4>
+      <div class="messages" id="chatMessages"></div>
+      <input type="text" id="chatInput" placeholder="Написать сообщение">
+      <button id="sendMessageBtn">Отправить</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+<script>
+// 🔹 Firebase
+const firebaseConfig = {
+  apiKey: "AIzaSyDW9wSQ8xVTvrgaDzwYrg1v8Jzm5KqrrAU",
+  authDomain: "baseuser-82b5d.firebaseapp.com",
+  projectId: "baseuser-82b5d",
+  storageBucket: "baseuser-82b5d.appspot.com",
+  messagingSenderId: "307488509181",
+  appId: "1:307488509181:web:50397c7ba445c6e45a8294"
+};
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.firestore();
+
+// 🔹 Элементы
+const profileTab = document.getElementById('profileTab');
+const addFriendTab = document.getElementById('addFriendTab');
+const friendsTab = document.getElementById('friendsTab');
+const messagesTab = document.getElementById('messagesTab');
+const notificationsTab = document.getElementById('notificationsTab');
+
+const profilePanel = document.getElementById('profilePanel');
+const settingsPanel = document.getElementById('settingsPanel');
+const addFriendPanel = document.getElementById('addFriendPanel');
+const friendsPanel = document.getElementById('friendsPanel');
+const messagesPanel = document.getElementById('messagesPanel');
+const notificationsPanel = document.getElementById('notificationsPanel');
+
+const profileName = document.getElementById('profileName');
+const profileID = document.getElementById('profileID');
+const profileStatus = document.getElementById('profileStatus');
+const profileAvatar = document.getElementById('profileAvatar');
+
+const logoutBtn = document.getElementById('logoutBtn');
+const notifCount = document.getElementById('notifCount');
+
+const friendIDInput = document.getElementById('friendID');
+const searchFriendBtn = document.getElementById('searchFriend');
+const friendResult = document.getElementById('friendResult');
+
+const chatBox = document.getElementById('chatBox');
+const chatWithName = document.getElementById('chatWithName');
+const chatMessages = document.getElementById('chatMessages');
+const chatInput = document.getElementById('chatInput');
+const sendMessageBtn = document.getElementById('sendMessageBtn');
+
+const settingsBtn = document.getElementById('settingsBtn');
+const newName = document.getElementById('newName');
+const newAvatar = document.getElementById('newAvatar');
+const newStatus = document.getElementById('newStatus');
+const saveSettings = document.getElementById('saveSettings');
+
+let currentChatID = null;
+let currentFriendUID = null;
+
+// 🔹 Панели
+function hideAllPanels(){
+  profilePanel.classList.add('hidden');
+  settingsPanel.classList.add('hidden');
+  addFriendPanel.classList.add('hidden');
+  friendsPanel.classList.add('hidden');
+  messagesPanel.classList.add('hidden');
+  notificationsPanel.classList.add('hidden');
+  chatBox.classList.add('hidden');
+}
+
+// 🔹 Вкладки
+profileTab.addEventListener('click', ()=>{ hideAllPanels(); profilePanel.classList.remove('hidden'); });
+addFriendTab.addEventListener('click', ()=>{ hideAllPanels(); addFriendPanel.classList.remove('hidden'); });
+friendsTab.addEventListener('click', ()=>{ hideAllPanels(); friendsPanel.classList.remove('hidden'); updateFriendsList(); });
+messagesTab.addEventListener('click', ()=>{ hideAllPanels(); messagesPanel.classList.remove('hidden'); updateMessagesList(); });
+notificationsTab.addEventListener('click', ()=>{ hideAllPanels(); notificationsPanel.classList.remove('hidden'); updateNotifications(); });
+
+// 🔹 Настройки
+settingsBtn.onclick = ()=>{ hideAllPanels(); settingsPanel.classList.remove('hidden'); };
+saveSettings.onclick = async ()=>{
+  const user = auth.currentUser;
+  let updates = {};
+  if(newName.value.trim()) updates.name = newName.value.trim();
+  if(newAvatar.value.trim()) updates.avatar = newAvatar.value.trim();
+  if(newStatus.value.trim()) updates.status = newStatus.value.trim();
+  await db.collection('users').doc(user.uid).update(updates);
+  loadProfile();
+  alert("Сохранено!");
+};
+
+// 🔹 Загрузка профиля
+async function loadProfile(){
+  const user = auth.currentUser;
+  const doc = await db.collection('users').doc(user.uid).get();
+  const data = doc.data();
+  profileName.textContent = data.name;
+  profileID.textContent = data.customID;
+  profileStatus.textContent = data.status || "Не онлайн";
+  profileAvatar.src = data.avatar || "https://via.placeholder.com/100";
+}
+
+// 🔹 Авторизация
+auth.onAuthStateChanged(async (user)=>{
+  if(!user){ window.location.href="index.html"; return; }
+  await loadProfile();
+  updateNotifications();
+});
+
+// 🔹 Выход
+logoutBtn.onclick = ()=>{ auth.signOut().then(()=>{ window.location.href="index.html"; }); }
+
+// 🔹 Добавить друга
+searchFriendBtn.onclick = async ()=>{
+  const id = Number(friendIDInput.value.trim());
+  if(!id) return;
+  const query = await db.collection('users').where('customID','==',id).get();
+  if(query.empty){ friendResult.innerHTML="<p>Пользователь не найден</p>"; return; }
+  const friendData = query.docs[0].data();
+  const friendUID = query.docs[0].id;
+  friendResult.innerHTML = `<p>${friendData.name} (ID:${friendData.customID})</p><button id="sendRequest">Добавить</button>`;
+  document.getElementById('sendRequest').onclick = async ()=>{
+    const user = auth.currentUser;
+    await db.collection('users').doc(friendUID).collection('notifications').add({
+      type: "friend_request",
+      fromUID: user.uid,
+      fromName: user.displayName,
+      timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+      status: "pending"
+    });
+    friendResult.innerHTML="<p>Запрос отправлен!</p>";
+    updateNotifications();
+  };
+};
+
+// 🔹 Уведомления
+async function updateNotifications(){
+  const user = auth.currentUser;
+  const notifSnap = await db.collection('users').doc(user.uid)
+    .collection('notifications').where("status","==","pending").get();
+  notifCount.textContent = notifSnap.size;
+  notificationsPanel.innerHTML = "";
+  notifSnap.forEach(doc=>{
+    const n = doc.data();
+    const div = document.createElement("div");
+    div.className = "card";
+    div.innerHTML = `<p>${n.fromName} хочет добавить вас в друзья</p>
+                     <button id="accept${doc.id}">Принять</button>
+                     <button id="reject${doc.id}">Отклонить</button>`;
+    notificationsPanel.appendChild(div);
+    document.getElementById(`accept${doc.id}`).onclick = async ()=>{
+      await db.collection('users').doc(user.uid).update({ friends: firebase.firestore.FieldValue.arrayUnion(n.fromUID) });
+      await db.collection('users').doc(n.fromUID).update({ friends: firebase.firestore.FieldValue.arrayUnion(user.uid) });
+      await db.collection('users').doc(user.uid).collection('notifications').doc(doc.id).update({ status:"accepted" });
+      div.remove(); updateFriendsList();
+    };
+    document.getElementById(`reject${doc.id}`).onclick = async ()=>{
+      await db.collection('users').doc(user.uid).collection('notifications').doc(doc.id).update({ status:"rejected" });
+      div.remove();
+    };
+  });
+}
+
+// 🔹 Друзья
+async function updateFriendsList(){
+  const user = auth.currentUser;
+  const doc = await db.collection('users').doc(user.uid).get();
+  const friendsUIDs = doc.data().friends || [];
+  friendsPanel.innerHTML="";
+  friendsUIDs.forEach(async uid=>{
+    const fdoc = await db.collection('users').doc(uid).get();
+    const fdata = fdoc.data();
+    const div = document.createElement("div");
+    div.className = "card";
+    const statusDot = fdata.status === "Онлайн" ? "#4CAF50" : "#888";
+    div.innerHTML = `<div class="info"><img src="${fdata.avatar || 'https://via.placeholder.com/40'}">
+                     <span>${fdata.name}<span class="status-dot" style="background:${statusDot}"></span></span></div>
+                     <div class="actions"><button class="writeBtn">Написать</button>
+                     <button class="deleteBtn">Удалить</button></div>`;
+    friendsPanel.appendChild(div);
+    div.querySelector(".writeBtn").onclick = ()=>{ openChat(uid,fdata.name); };
+    div.querySelector(".deleteBtn").onclick = async ()=>{
+      await db.collection('users').doc(user.uid).update({ friends: firebase.firestore.FieldValue.arrayRemove(uid) });
+      await db.collection('users').doc(uid).update({ friends: firebase.firestore.FieldValue.arrayRemove(user.uid) });
+      updateFriendsList();
+    };
+  });
+}
+
+// 🔹 Сообщения
+async function updateMessagesList(){
+  const user = auth.currentUser;
+  const chatsSnap = await db.collection('chats').where("members","array-contains",user.uid).get();
+  messagesPanel.innerHTML="";
+  chatsSnap.forEach(doc=>{
+    const chat = doc.data();
+    const friendUID = chat.members.find(uid=>uid!==user.uid);
+    db.collection('users').doc(friendUID).get().then(fdoc=>{
+      const fdata = fdoc.data();
+      const div = document.createElement("div");
+      div.className = "card";
+      div.innerHTML = `<div class="info"><span>${fdata.name}</span></div>
+                       <div class="actions"><button class="openChatBtn">Открыть диалог</button></div>`;
+      messagesPanel.appendChild(div);
+      div.querySelector(".openChatBtn").onclick = ()=>{ openChat(friendUID,fdata.name); };
+    });
+  });
+}
+
+// 🔹 Чат с подколлекцией сообщений
+async function openChat(friendUID,friendName){
+  chatBox.classList.remove('hidden');
+  chatWithName.textContent = friendName;
+  const user = auth.currentUser;
+  currentFriendUID = friendUID;
+  currentChatID = [user.uid, friendUID].sort().join("_");
+  const chatRef = db.collection('chats').doc(currentChatID);
+
+  const chatDoc = await chatRef.get();
+  if(!chatDoc.exists){
+    await chatRef.set({ members:[user.uid, friendUID] });
+  }
+
+  chatRef.collection('messages').orderBy('timestamp')
+    .onSnapshot(snapshot=>{
+      chatMessages.innerHTML="";
+      snapshot.forEach(doc=>{
+        const m = doc.data();
+        const div = document.createElement("div");
+        div.textContent = (m.fromUID===user.uid?"Вы: ":"") + m.text;
+        div.className = m.fromUID===user.uid?"self":"friend";
+        chatMessages.appendChild(div);
+      });
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+    });
+}
+
+// Отправка сообщений через подколлекцию
+sendMessageBtn.onclick = async ()=>{
+  const text = chatInput.value.trim();
+  if(!text) return;
+  const user = auth.currentUser;
+  const chatRef = db.collection('chats').doc(currentChatID);
+
+  await chatRef.collection('messages').add({
+    fromUID: user.uid,
+    text: text,
+    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+  });
+  chatInput.value="";
+};
+</script>
+</body>
+</html>
