@@ -8,31 +8,31 @@
 <style>
   *{box-sizing:border-box;margin:0;padding:0;font-family:'Poppins',sans-serif}
   html,body{height:100%}
-  body{background:linear-gradient(135deg,#3a3a3a,#2a2a2a);color:#fff;height:100vh;overflow:hidden}
+  body{background:#0b0b1f;color:#fff;height:100vh;overflow:hidden;background-image:radial-gradient(#1a1a2e 1px, transparent 1px), radial-gradient(#1a1a2e 1px, transparent 1px);background-size:50px 50px;background-position:0 0,25px 25px}
 
   /* layout */
   .container{display:flex;height:100vh;width:100vw}
-  .sidebar{width:240px;background:rgba(255,255,255,0.04);backdrop-filter:blur(10px);padding:20px;display:flex;flex-direction:column;gap:14px;flex-shrink:0}
-  .center{flex:1;display:flex;flex-direction:column;min-width:0; /* important for flex child shrink */}
-  .main{flex:1;background:rgba(255,255,255,0.04);backdrop-filter:blur(8px);margin:20px;border-radius:18px;padding:22px;position:relative;overflow:auto;transition:margin-right .18s ease}
-  .chat-panel{width:0;overflow:hidden;transition:width .2s ease;border-left:1px solid rgba(255,255,255,0.03);display:flex;flex-direction:column}
-  .chat-panel.open{width:380px} /* visible chat width */
+  .sidebar{width:240px;background:rgba(0,0,0,0.6);backdrop-filter:blur(8px);padding:20px;display:flex;flex-direction:column;gap:14px;flex-shrink:0;border-right:1px solid rgba(255,255,255,0.05)}
+  .center{flex:1;display:flex;flex-direction:column;min-width:0;}
+  .main{flex:1;background:rgba(10,10,30,0.7);backdrop-filter:blur(10px);margin:20px;border-radius:18px;padding:22px;position:relative;overflow:auto;transition:margin-right .18s ease}
+  .chat-panel{width:0;overflow:hidden;transition:width .2s ease;border-left:1px solid rgba(255,255,255,0.03);display:flex;flex-direction:column;background:rgba(5,5,20,0.8)}
+  .chat-panel.open{width:380px}
 
-  .menu-item{padding:12px;border-radius:10px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;transition:0.15s}
-  .menu-item:hover{background:rgba(255,255,255,0.06)}
+  .menu-item{padding:12px;border-radius:10px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;transition:0.15s;color:#b0b0ff}
+  .menu-item:hover{background:rgba(255,255,255,0.08);color:#fff}
   .notif-count{background:#ff4d4d;border-radius:50%;padding:2px 8px;font-size:12px}
   .hidden{display:none}
   input,textarea,button{padding:10px;margin:6px 0;border-radius:10px;border:none;outline:none;font-family:inherit}
-  input,textarea{width:100%;background:rgba(255,255,255,0.06);color:#fff}
-  textarea{min-height:80px;resize:vertical}
-  button{cursor:pointer;background:rgba(255,255,255,0.12);color:#fff}
+  input,textarea{width:100%;background:rgba(255,255,255,0.08);color:#fff}
+  textarea{min-height:80px;resize:vertical;word-wrap:break-word;overflow-wrap:break-word}
+  button{cursor:pointer;background:linear-gradient(90deg,#4a4aff,#8b5cf6);color:#fff;transition:0.2s}
   button:hover{opacity:0.95}
-  .card{background:rgba(255,255,255,0.06);backdrop-filter:blur(4px);border-radius:12px;padding:12px;margin-bottom:12px}
+  .card{background:rgba(0,0,40,0.5);backdrop-filter:blur(6px);border-radius:12px;padding:12px;margin-bottom:12px;word-break:break-word}
   .card .row{display:flex;align-items:center;justify-content:space-between}
   .card .info{display:flex;align-items:center;gap:10px}
-  .avatar{width:48px;height:48px;border-radius:50%;object-fit:cover;border:1px solid rgba(255,255,255,0.08)}
+  .avatar{width:48px;height:48px;border-radius:50%;object-fit:cover;border:1px solid rgba(255,255,255,0.1)}
   .like-btn{padding:6px 10px;border-radius:8px;border:none;background:transparent}
-  .like-btn.liked{background:rgba(255,255,255,0.18)}
+  .like-btn.liked{background:rgba(255,255,255,0.2)}
   .post-create{margin-bottom:14px}
   .btn-primary{background:linear-gradient(90deg,#6ea8fe,#8b5cf6);color:#fff}
   .small-muted{font-size:13px;color:rgba(255,255,255,0.6)}
@@ -41,21 +41,20 @@
   .flex{display:flex;gap:10px;align-items:center}
 
   /* chat styles (right panel) */
-  .chat-header{display:flex;align-items:center;justify-content:space-between;padding:14px;border-bottom:1px solid rgba(255,255,255,0.03);background:rgba(255,255,255,0.02)}
+  .chat-header{display:flex;align-items:center;justify-content:space-between;padding:14px;border-bottom:1px solid rgba(255,255,255,0.03);background:rgba(10,10,40,0.5)}
   .chat-messages{flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:8px}
-  .msg-self{align-self:flex-end;background:rgba(255,255,255,0.9);color:#000;padding:10px;border-radius:12px;max-width:78%}
-  .msg-other{align-self:flex-start;background:rgba(255,255,255,0.14);padding:10px;border-radius:12px;max-width:78%}
+  .msg-self{align-self:flex-end;background:rgba(100,100,255,0.9);color:#fff;padding:10px;border-radius:12px;max-width:78%;word-break:break-word}
+  .msg-other{align-self:flex-start;background:rgba(50,50,100,0.6);padding:10px;border-radius:12px;max-width:78%;word-break:break-word}
   .chat-input{display:flex;padding:12px;border-top:1px solid rgba(255,255,255,0.03);gap:8px}
   .chat-input input{flex:1;padding:10px;border-radius:10px;background:rgba(255,255,255,0.05);color:#fff}
-  .chat-input button{padding:10px 14px;border-radius:10px;background:rgba(255,255,255,0.12);border:none;color:#fff;cursor:pointer}
+  .chat-input button{padding:10px 14px;border-radius:10px;background:linear-gradient(90deg,#4a4aff,#8b5cf6);border:none;color:#fff;cursor:pointer}
 
   /* dialogs list */
   .dialogs-list{display:flex;flex-direction:column;gap:8px}
-  .dialog-item{display:flex;align-items:center;justify-content:space-between;padding:10px;border-radius:10px;background:rgba(255,255,255,0.03);cursor:pointer}
-  .dialog-item:hover{background:rgba(255,255,255,0.06)}
+  .dialog-item{display:flex;align-items:center;justify-content:space-between;padding:10px;border-radius:10px;background:rgba(50,50,100,0.4);cursor:pointer}
+  .dialog-item:hover{background:rgba(80,80,150,0.6)}
   .unread-badge{background:#ff4747;border-radius:12px;padding:3px 8px;font-size:12px;color:#fff}
 
-  /* responsive: when chat open, reduce main margin so it doesn't get covered visually */
   .main.with-chat{margin-right:400px}
 </style>
 </head>
@@ -139,19 +138,13 @@
 
   <!-- RIGHT CHAT PANEL -->
   <div id="chatPanel" class="chat-panel">
-    <!-- content populated by JS -->
   </div>
 </div>
 
-<!-- Firebase libs (compat used to match your code style) -->
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
-
 <script>
-/* =========================
-   CONFIG
-   ========================= */
 const firebaseConfig = {
   apiKey: "AIzaSyDW9wSQ8xVTvrgaDzwYrg1v8Jzm5KqrrAU",
   authDomain: "baseuser-82b5d.firebaseapp.com",
@@ -164,9 +157,6 @@ firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
 
-/* =========================
-   ELEMENTS
-   ========================= */
 const profileTab = document.getElementById('profileTab');
 const addFriendTab = document.getElementById('addFriendTab');
 const friendsTab = document.getElementById('friendsTab');
@@ -210,9 +200,6 @@ let currentChatID = null;
 let currentFriendUID = null;
 let currentUser = null;
 
-/* =========================
-   HELPERS
-   ========================= */
 function hideAllPanels(){
   profilePanel.classList.add('hidden');
   settingsPanel.classList.add('hidden');
@@ -228,26 +215,19 @@ function escapeHtml(str){
   return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
-/* =========================
-   TABS
-   ========================= */
 profileTab.addEventListener('click', ()=>{ hideAllPanels(); profilePanel.classList.remove('hidden'); });
 addFriendTab.addEventListener('click', ()=>{ hideAllPanels(); addFriendPanel.classList.remove('hidden'); });
 friendsTab.addEventListener('click', ()=>{ hideAllPanels(); friendsPanel.classList.remove('hidden'); updateFriendsList(); });
-messagesTab.addEventListener('click', ()=>{ hideAllPanels(); messagesPanel.classList.remove('hidden'); updateMessagesList(); /* do not auto-open chat */ });
+messagesTab.addEventListener('click', ()=>{ hideAllPanels(); messagesPanel.classList.remove('hidden'); updateMessagesList(); });
 newsTab.addEventListener('click', ()=>{ hideAllPanels(); newsPanel.classList.remove('hidden'); });
 notificationsTab.addEventListener('click', ()=>{ hideAllPanels(); notificationsPanel.classList.remove('hidden'); updateNotifications(); });
 
-/* =========================
-   AUTH & PROFILE
-   ========================= */
 async function loadProfile(){
   const user = auth.currentUser;
   if(!user) return;
   currentUser = user;
   const doc = await db.collection('users').doc(user.uid).get();
   if(!doc.exists) {
-    // If user doc missing, create minimal doc
     await db.collection('users').doc(user.uid).set({
       name: user.displayName || 'Пользователь',
       customID: Math.floor(100000 + Math.random()*899999),
@@ -255,7 +235,6 @@ async function loadProfile(){
       status: 'Онлайн',
       friends: []
     }, {merge:true});
-    // reload
     return loadProfile();
   }
   const data = doc.data();
@@ -268,24 +247,19 @@ async function loadProfile(){
   profileAvatarSmall.src = data.avatar || 'https://via.placeholder.com/48';
 }
 
-/* redirect to login if not auth */
 auth.onAuthStateChanged(async (user)=>{
   if(!user){ window.location.href = 'index.html'; return; }
   currentUser = user;
   await loadProfile();
   listenForPosts();
   listenForMessageCounts();
-  // show default panel
+  updateMessagesList();
   hideAllPanels();
   profilePanel.classList.remove('hidden');
 });
 
-/* logout */
 logoutBtn.onclick = ()=>{ auth.signOut().then(()=>{ window.location.href='index.html'; }); }
 
-/* =========================
-   SETTINGS
-   ========================= */
 const settingsBtn = document.getElementById('settingsBtn');
 const newName = document.getElementById('newName');
 const newAvatar = document.getElementById('newAvatar');
@@ -306,9 +280,6 @@ saveSettings.onclick = async ()=>{
   alert('Сохранено');
 };
 
-/* =========================
-   FRIENDS
-   ========================= */
 searchFriendBtn.onclick = async ()=>{
   const id = Number(friendIDInput.value.trim());
   if(!id) return;
@@ -332,312 +303,167 @@ async function updateFriendsList(){
   const doc = await db.collection('users').doc(user.uid).get();
   const friendsUIDs = (doc.exists && doc.data().friends) ? doc.data().friends : [];
   friendsPanel.innerHTML = '<h3>Друзья</h3>';
-  for(const uid of friendsUIDs){
-    const fdoc = await db.collection('users').doc(uid).get();
-    const fdata = fdoc.exists ? fdoc.data() : { name:'Неизвестный', avatar:null, customID:'----' };
+  if(!friendsUIDs.length){ friendsPanel.innerHTML += '<p>У вас нет друзей</p>'; return; }
+  for(let uid of friendsUIDs){
+    const fDoc = await db.collection('users').doc(uid).get();
+    if(!fDoc.exists) continue;
+    const fData = fDoc.data();
     const div = document.createElement('div');
-    div.className = 'card';
-    div.innerHTML = `<div class="row"><div class="info"><img src="${fdata.avatar || 'https://via.placeholder.com/40'}" class="avatar"><div><strong>${fdata.name}</strong><div class="small-muted">ID: ${fdata.customID}</div></div></div><div class="flex"><button class="writeBtn">Написать</button><button class="deleteBtn">Удалить</button></div></div>`;
+    div.className='card flex';
+    div.innerHTML = `
+      <div class="flex" style="align-items:center;gap:10px">
+        <img src="${fData.avatar || 'https://via.placeholder.com/48'}" class="avatar">
+        <strong>${escapeHtml(fData.name)}</strong>
+      </div>
+      <button class="btn-primary">Написать</button>
+    `;
+    div.querySelector('button').onclick=()=>{ openChat(uid,fData.name) };
     friendsPanel.appendChild(div);
-    div.querySelector('.writeBtn').onclick = ()=> openChat(uid, fdata.name);
-    div.querySelector('.deleteBtn').onclick = async ()=>{
-      await db.collection('users').doc(user.uid).update({ friends: firebase.firestore.FieldValue.arrayRemove(uid) });
-      await db.collection('users').doc(uid).update({ friends: firebase.firestore.FieldValue.arrayRemove(user.uid) });
-      updateFriendsList();
-    };
   }
 }
 
-/* =========================
-   NOTIFICATIONS
-   ========================= */
-async function updateNotifications(){
-  const user = auth.currentUser; if(!user) return;
-  const notifSnap = await db.collection('users').doc(user.uid).collection('notifications').where('status','==','pending').get();
-  notifCount.textContent = notifSnap.size;
-  notificationsPanel.innerHTML = '';
-  notifSnap.forEach(doc=>{
-    const n = doc.data();
-    const div = document.createElement('div'); div.className='card';
-    if(n.type === 'friend_request'){
-      div.innerHTML = `<p>${n.fromName} хочет добавить вас в друзья</p><div style="display:flex;gap:8px"><button id="accept${doc.id}">Принять</button><button id="reject${doc.id}">Отклонить</button></div>`;
-      notificationsPanel.appendChild(div);
-      document.getElementById(`accept${doc.id}`).onclick = async ()=>{
-        await db.collection('users').doc(user.uid).update({ friends: firebase.firestore.FieldValue.arrayUnion(n.fromUID) });
-        await db.collection('users').doc(n.fromUID).update({ friends: firebase.firestore.FieldValue.arrayUnion(user.uid) });
-        await db.collection('users').doc(user.uid).collection('notifications').doc(doc.id).update({ status:'accepted' });
-        div.remove(); updateFriendsList();
-      };
-      document.getElementById(`reject${doc.id}`).onclick = async ()=>{
-        await db.collection('users').doc(user.uid).collection('notifications').doc(doc.id).update({ status:'rejected' });
-        div.remove();
-      };
-    }
-  });
-}
-
-/* =========================
-   POSTS (НОВОСТИ)
-   ========================= */
+/* ===== POSTS ====== */
 createPostBtn.onclick = async ()=>{
   const text = postText.value.trim();
   if(!text) return alert('Введите текст');
-  const user = auth.currentUser;
-  const uDoc = await db.collection('users').doc(user.uid).get();
-  const u = uDoc.exists ? uDoc.data() : { name: user.displayName || 'Пользователь', avatar: null };
+  const userDoc = await db.collection('users').doc(currentUser.uid).get();
+  const u = userDoc.data();
   await db.collection('posts').add({
-    authorUID: user.uid,
-    authorName: u.name || user.displayName || 'Пользователь',
+    authorUID: currentUser.uid,
+    authorName: u.name || 'Пользователь',
     authorAvatar: u.avatar || null,
-    text: text,
-    likes: [],
+    text:text,
+    likes:[],
     timestamp: firebase.firestore.FieldValue.serverTimestamp()
   });
-  postText.value = '';
+  postText.value='';
 };
 
-let postsUnsubscribe = null;
 function listenForPosts(){
-  if(postsUnsubscribe) postsUnsubscribe();
-  postsUnsubscribe = db.collection('posts').orderBy('timestamp','desc')
-    .onSnapshot(snapshot=>{
-      postsFeed.innerHTML = '';
-      snapshot.forEach(doc=>{
-        const p = doc.data();
-        const id = doc.id;
-        const card = document.createElement('div'); card.className='card';
-        const liked = (p.likes || []).includes(currentUser.uid);
-        card.innerHTML = `
-          <div class="row">
-            <div class="info"><img src="${p.authorAvatar || 'https://via.placeholder.com/48'}" class="avatar"><div><strong>${p.authorName}</strong><div class="small-muted">${p.timestamp? new Date(p.timestamp.toDate()).toLocaleString() : ''}</div></div></div>
-            <div class="flex"><button class="like-btn ${liked? 'liked':''}" data-id="${id}">❤️ ${ (p.likes||[]).length }</button></div>
-          </div>
-          <div style="margin-top:8px">${escapeHtml(p.text)}</div>
-        `;
-        postsFeed.appendChild(card);
-        const likeBtn = card.querySelector('.like-btn');
-        likeBtn.onclick = async ()=>{
-          const uid = currentUser.uid;
-          const postRef = db.collection('posts').doc(id);
-          await db.runTransaction(async tx=>{
-            const snap = await tx.get(postRef);
-            const data = snap.data() || {likes:[]};
-            const likes = data.likes || [];
-            if(likes.includes(uid)){
-              tx.update(postRef, { likes: firebase.firestore.FieldValue.arrayRemove(uid) });
-            } else {
-              tx.update(postRef, { likes: firebase.firestore.FieldValue.arrayUnion(uid) });
-            }
-          });
-        };
-      });
+  db.collection('posts').orderBy('timestamp','desc').onSnapshot(snapshot=>{
+    postsFeed.innerHTML='';
+    snapshot.forEach(doc=>{
+      const p = doc.data();
+      const card = document.createElement('div'); card.className='card';
+      const liked = (p.likes||[]).includes(currentUser.uid);
+      card.innerHTML = `
+        <div class="row">
+          <div class="info"><img src="${p.authorAvatar||'https://via.placeholder.com/48'}" class="avatar"><div><strong>${p.authorName}</strong><div class="small-muted">${p.timestamp? new Date(p.timestamp.toDate()).toLocaleString() : ''}</div></div></div>
+          <div class="flex"><button class="like-btn ${liked?'liked':''}" data-id="${doc.id}">❤️ ${(p.likes||[]).length}</button></div>
+        </div>
+        <div style="margin-top:8px">${escapeHtml(p.text)}</div>
+      `;
+      postsFeed.appendChild(card);
+      card.querySelector('.like-btn').onclick=async ()=>{
+        const uid = currentUser.uid;
+        const ref = db.collection('posts').doc(doc.id);
+        await db.runTransaction(async tx=>{
+          const snap = await tx.get(ref);
+          const likes = snap.data().likes||[];
+          if(likes.includes(uid)) tx.update(ref,{likes:firebase.firestore.FieldValue.arrayRemove(uid)});
+          else tx.update(ref,{likes:firebase.firestore.FieldValue.arrayUnion(uid)});
+        });
+      };
     });
+  });
 }
 
-/* =========================
-   CHATS & DIALOGS
-   ========================= */
-
-/*
-  Chat doc structure:
-  chats (collection)
-    - <chatId> (doc)
-        members: [uid1, uid2]
-        unreadCounts: { <uid1>: number, <uid2>: number }
-        updatedAt: timestamp
-    - messages (subcollection) -> timestamped message docs
-
-  chatId is deterministic: sorted uids joined by '_'
-*/
-
-let chatsUnsub = null;
-function updateMessagesList(){
-  // listen in real-time to all chats that include current user and update dialogs list
-  if(chatsUnsub) chatsUnsub();
-  chatsUnsub = db.collection('chats').where('members','array-contains', currentUser.uid)
-    .onSnapshot(async snapshot=>{
-      chatsList.innerHTML = '';
-      // fetch user info for each chat's other member
-      const docs = snapshot.docs.sort((a,b)=>{
-        const da = a.data().updatedAt ? a.data().updatedAt.toMillis() : 0;
-        const dbt = b.data().updatedAt ? b.data().updatedAt.toMillis() : 0;
-        return dbt - da; // newest first
-      });
-      for(const docSnap of docs){
-        const chat = docSnap.data();
-        const chatId = docSnap.id;
-        const otherUID = chat.members.find(u=>u!==currentUser.uid);
-        // try to get user info
-        const udoc = await db.collection('users').doc(otherUID).get();
-        const udata = udoc.exists ? udoc.data() : { name: otherUID, avatar: null, customID:'----' };
-        const unread = (chat.unreadCounts && chat.unreadCounts[currentUser.uid]) ? chat.unreadCounts[currentUser.uid] : 0;
-        const item = document.createElement('div');
-        item.className = 'dialog-item';
-        item.innerHTML = `<div style="display:flex;align-items:center;gap:10px"><img src="${udata.avatar||'https://via.placeholder.com/40'}" class="avatar" style="width:40px;height:40px"><div><strong>${udata.name}</strong><div class="small-muted">ID: ${udata.customID||'—'}</div></div></div><div style="display:flex;align-items:center;gap:8px">${unread>0?`<span class="unread-badge">${unread}</span>`:''}<button class="openChatBtn">Открыть</button></div>`;
-        chatsList.appendChild(item);
-        item.querySelector('.openChatBtn').onclick = ()=> openChat(otherUID, udata.name);
-      }
-    });
-}
-
-async function openChat(friendUID, friendName){
-  // Open right chat panel and populate messages.
-  // Create chat doc if not exists.
-  currentFriendUID = friendUID;
-  const user = auth.currentUser;
-  currentChatID = [user.uid, friendUID].sort().join('_');
+/* ===== CHAT ===== */
+function openChat(friendUID, friendName){
+  currentFriendUID=friendUID;
+  currentChatID=[currentUser.uid,friendUID].sort().join('_');
   const chatRef = db.collection('chats').doc(currentChatID);
-  const chatDoc = await chatRef.get();
-  if(!chatDoc.exists){
-    await chatRef.set({
-      members:[user.uid, friendUID],
-      unreadCounts: { [user.uid]: 0, [friendUID]: 0 },
-      updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-    });
-  }
-  // make chat panel visible
-  chatPanel.classList.add('open');
-  mainArea.classList.add('with-chat');
+  chatRef.get().then(async chatDoc=>{
+    if(!chatDoc.exists){
+      await chatRef.set({members:[currentUser.uid,friendUID],unreadCounts:{[currentUser.uid]:0,[friendUID]:0},updatedAt:firebase.firestore.FieldValue.serverTimestamp()});
+    }
+    chatPanel.classList.add('open'); mainArea.classList.add('with-chat');
+    chatPanel.innerHTML=`
+      <div class="chat-header"><div><strong>${escapeHtml(friendName)}</strong></div><div><button id="closeChatBtn">✖</button></div></div>
+      <div class="chat-messages" id="chatMessages"></div>
+      <div class="chat-input"><input id="chatInput" placeholder="Написать сообщение..."><button id="sendMessageBtn">Отправить</button></div>
+    `;
+    document.getElementById('closeChatBtn').onclick=closeChat;
 
-  // build chat panel content
-  chatPanel.innerHTML = `
-    <div class="chat-header">
-      <div>
-        <strong id="chatWithName">${escapeHtml(friendName)}</strong>
-        <div class="small-muted" id="chatWithStatus"> </div>
-      </div>
-      <div>
-        <button id="closeChatBtn" title="Закрыть">✖</button>
-      </div>
-    </div>
-    <div class="chat-messages" id="chatMessages"></div>
-    <div class="chat-input">
-      <input id="chatInput" placeholder="Написать сообщение...">
-      <button id="sendMessageBtn">Отправить</button>
-    </div>
-  `;
+    chatRef.update({[`unreadCounts.${currentUser.uid}`]:0,updatedAt:firebase.firestore.FieldValue.serverTimestamp()});
 
-  // close handler (works reliably)
-  document.getElementById('closeChatBtn').onclick = closeChat;
-
-  // mark unread for current user as 0
-  await chatRef.update({ [`unreadCounts.${user.uid}`]: 0, updatedAt: firebase.firestore.FieldValue.serverTimestamp() });
-
-  // listen messages realtime
-  if(window._messagesUnsub) window._messagesUnsub(); // remove previous
-  window._messagesUnsub = chatRef.collection('messages').orderBy('timestamp')
-    .onSnapshot(snapshot=>{
-      const msgs = document.getElementById('chatMessages');
-      msgs.innerHTML = '';
-      snapshot.forEach(mdoc=>{
-        const m = mdoc.data();
-        const div = document.createElement('div');
-        div.className = m.fromUID === user.uid ? 'msg-self' : 'msg-other';
-        const time = m.timestamp ? new Date(m.timestamp.toDate()).toLocaleTimeString() : '';
-        div.innerHTML = `<div>${escapeHtml(m.text)}</div><div class="small-muted" style="font-size:11px;margin-top:6px">${time}</div>`;
+    if(window._messagesUnsub) window._messagesUnsub();
+    window._messagesUnsub=chatRef.collection('messages').orderBy('timestamp').onSnapshot(snapshot=>{
+      const msgs=document.getElementById('chatMessages');
+      msgs.innerHTML='';
+      snapshot.forEach(m=>{
+        const msg=m.data();
+        const div=document.createElement('div');
+        div.className=msg.fromUID===currentUser.uid?'msg-self':'msg-other';
+        const time=msg.timestamp?new Date(msg.timestamp.toDate()).toLocaleTimeString():'';
+        div.innerHTML=`<div>${escapeHtml(msg.text)}</div><div class="small-muted" style="font-size:11px;margin-top:6px">${time}</div>`;
         msgs.appendChild(div);
       });
-      msgs.scrollTop = msgs.scrollHeight;
+      msgs.scrollTop=msgs.scrollHeight;
     });
 
-  // send message handler
-  document.getElementById('sendMessageBtn').onclick = async ()=>{
-    const input = document.getElementById('chatInput');
-    const text = input.value.trim();
-    if(!text) return;
-    const msg = { fromUID: user.uid, text: text, timestamp: firebase.firestore.FieldValue.serverTimestamp() };
-    await chatRef.collection('messages').add(msg);
-    // increment unread for recipient
-    const chatSnapshot = await chatRef.get();
-    if(chatSnapshot.exists){
-      const members = chatSnapshot.data().members || [];
-      const recipient = members.find(u=>u!==user.uid);
-      if(recipient){
-        await chatRef.update({ [`unreadCounts.${recipient}`]: firebase.firestore.FieldValue.increment(1), updatedAt: firebase.firestore.FieldValue.serverTimestamp() });
-      }
-    }
-    input.value = '';
-  };
-
-  // optional: show friend's status if available
-  const uDoc = await db.collection('users').doc(friendUID).get();
-  if(uDoc.exists){
-    const ud = uDoc.data();
-    const statusEl = document.getElementById('chatWithStatus');
-    if(statusEl) statusEl.textContent = ud.status ? `Статус: ${ud.status}` : '';
-  }
+    document.getElementById('sendMessageBtn').onclick=async ()=>{
+      const input=document.getElementById('chatInput');
+      const text=input.value.trim();
+      if(!text) return;
+      const msg={fromUID:currentUser.uid,text:text,timestamp:firebase.firestore.FieldValue.serverTimestamp()};
+      await chatRef.collection('messages').add(msg);
+      const chatSnapshot=await chatRef.get();
+      const members=chatSnapshot.data().members||[];
+      const recipient=members.find(u=>u!==currentUser.uid);
+      if(recipient) await chatRef.update({[`unreadCounts.${recipient}`]:firebase.firestore.FieldValue.increment(1),updatedAt:firebase.firestore.FieldValue.serverTimestamp()});
+      input.value='';
+    };
+  });
 }
 
 function closeChat(){
-  if(window._messagesUnsub) { window._messagesUnsub(); window._messagesUnsub = null; }
-  chatPanel.classList.remove('open');
-  mainArea.classList.remove('with-chat');
-  chatPanel.innerHTML = ''; // clear content
-  currentChatID = null;
-  currentFriendUID = null;
-  // update message counts in sidebar if needed
-  listenForMessageCounts(); // refresh count
+  if(window._messagesUnsub){window._messagesUnsub(); window._messagesUnsub=null;}
+  chatPanel.classList.remove('open'); mainArea.classList.remove('with-chat'); chatPanel.innerHTML='';
 }
 
-/* =========================
-   Listen unread totals & dialogs
-   ========================= */
-let unreadUnsub = null;
 function listenForMessageCounts(){
-  if(unreadUnsub) unreadUnsub();
-  unreadUnsub = db.collection('chats').where('members','array-contains', currentUser.uid)
-    .onSnapshot(snapshot=>{
-      let total = 0;
-      snapshot.forEach(doc=>{
-        const d = doc.data();
-        const uc = d.unreadCounts || {};
-        total += (uc[currentUser.uid] || 0);
-      });
-      msgCount.textContent = total;
+  db.collection('chats').where('members','array-contains',currentUser.uid).onSnapshot(snapshot=>{
+    let totalUnread=0;
+    snapshot.forEach(chat=>{
+      const data=chat.data();
+      totalUnread += data.unreadCounts[currentUser.uid]||0;
     });
+    msgCount.textContent=totalUnread;
+  });
 }
 
-/* =========================
-   listen messages list (dialogs)
-   ========================= */
-function listenDialogsRealtime(){
-  // we call updateMessagesList which uses onSnapshot internally; nothing else needed here
-  updateMessagesList();
+function updateMessagesList(){
+  db.collection('chats').where('members','array-contains',currentUser.uid).get().then(snapshot=>{
+    chatsList.innerHTML='';
+    snapshot.forEach(chat=>{
+      const data = chat.data();
+      const otherUID = data.members.find(u=>u!==currentUser.uid);
+      db.collection('users').doc(otherUID).get().then(uDoc=>{
+        const uData = uDoc.data();
+        const div = document.createElement('div');
+        div.className='dialog-item';
+        div.innerHTML=`<span>${escapeHtml(uData.name)}</span> <span class="unread-badge">${data.unreadCounts[currentUser.uid]||0}</span>`;
+        div.onclick=()=>{ openChat(otherUID,uData.name) };
+        chatsList.appendChild(div);
+      });
+    });
+  });
 }
 
-/* =========================
-   listen posts on auth
-   ========================= */
-function listenForPosts(){
-  // implement earlier function to listen and render posts
-  // already defined above as listenForPosts (just call it)
-  if(typeof listenForPosts === 'function') {
-    // if the function exists above we already used that name; but to be safe call posts listener directly:
-  }
-  // call the posts listener we defined earlier (it exists because function declared above)
+function updateNotifications(){
+  db.collection('users').doc(currentUser.uid).collection('notifications').orderBy('timestamp','desc').get().then(snapshot=>{
+    notificationsPanel.innerHTML='<h3>Уведомления</h3>';
+    snapshot.forEach(doc=>{
+      const n = doc.data();
+      const div = document.createElement('div');
+      div.className='card';
+      div.innerHTML = `<div>${escapeHtml(n.fromName || 'Система')} : ${escapeHtml(n.type)}</div>`;
+      notificationsPanel.appendChild(div);
+    });
+    notifCount.textContent = snapshot.size;
+  });
 }
-
-/* =========================
-   Start listeners after auth
-   ========================= */
-auth.onAuthStateChanged(user=>{
-  if(!user) return;
-  currentUser = user;
-  // start listening posts & dialogs & unread counts
-  listenForPosts(); // defined above
-  listenForMessageCounts();
-  listenDialogsRealtime();
-});
-
-/* =========================
-   INITIAL: keep main panel visible
-   ========================= */
-
-/* Note: updateMessagesList() uses onSnapshot to keep dialogs up-to-date.
-   openChat() creates chat doc if needed and opens right-side panel. 
-   closeChat() reliably closes it (handler is attached inside openChat).
-*/
-
 </script>
 </body>
 </html>
